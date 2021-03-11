@@ -1,6 +1,6 @@
 # Import the pygame module
 import pygame
-
+import random
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
 from pygame.locals import (
@@ -17,6 +17,7 @@ from pygame.locals import (
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
+
 # Define a player object by extending pygame.sprite.Sprite
 # The surface drawn on the screen is now an attribute of 'player'
 class Player(pygame.sprite.Sprite):
@@ -28,13 +29,13 @@ class Player(pygame.sprite.Sprite):
 
     # Move the sprite based on user keypresses
     def update(self, pressed_keys):
-        if pressed_keys[K_UP]:
-            self.rect.move_ip(0, -5)
-        if pressed_keys[K_DOWN]:
-            self.rect.move_ip(0, 5)
+        # if pressed_keys[K_UP]:
+        #     self.rect.move_ip(0, -5)
+        # if pressed_keys[K_DOWN]:
+        #     self.rect.move_ip(0, 5)
         if pressed_keys[K_LEFT]:
             self.rect.move_ip(-5, 0)
-        if pressed_keys[K_RIGHT]:
+        elif pressed_keys[K_RIGHT]:
             self.rect.move_ip(5, 0)
 
         # Keep player on the screen
@@ -48,9 +49,42 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = SCREEN_HEIGHT
 
 
+# Define the enemy object by extending pygame.sprite.Sprite
+# The surface you draw on the screen is now an attribute of 'enemy'
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Enemy, self).__init__()
+        self.surf = pygame.Surface((20, 10))
+        self.surf.fill((255, 255, 255))
+        self.rect = self.surf.get_rect(
+            center=(
+                random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 100),
+                random.randint(0, SCREEN_HEIGHT),
+            )
+        )
+        self.speed = random.randint(5, 20)
+
+    # Move the sprite based on speed
+    # Remove the sprite when it passes the left edge of the screen
+    def update(self):
+        self.rect.move_ip(-self.speed, 0)
+        if self.rect.right < 0:
+            self.kill()
+
+
+# Create the 'player'
+player = Player()
+
+# Create groups to hold enemy sprites and all sprites
+# - enemies is used for collision detection and position updates
+# - all_sprites is used for rendering
+enemies = pygame.sprite.Group()
+all_sprites = pygame.sprite.Group()
+all_sprites.add(player)
+
 # Initialize pygame
 pygame.init()
-
+clock = pygame.time.Clock()
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -80,10 +114,12 @@ while running:
     # Fill the screen with black
     screen.fill((0, 0, 0))
 
-    # Draw the player on the screen
-    screen.blit(player.surf, player.rect)
+    # Draw all sprites
+    for entity in all_sprites:
+        screen.blit(entity.surf, entity.rect)
+
     # screen.blit(player.surf, player.rect)
-    print(player.rect)
+    clock.tick(40)
 
     # Update the display
     pygame.display.flip()

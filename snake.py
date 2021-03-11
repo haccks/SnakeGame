@@ -1,130 +1,72 @@
-from game import Game
 import pygame
 from pygame.math import Vector2
+from foundation import Settings
+import copy
+
+INITIAL_NUM_UNITS = 3
+RIGHT = 1
+LEFT = -1
+DOWN = 2
+UP = -2
 
 
-class Snake(Game):
-    def __init__(self, speed=5, obj_color=(255, 255, 255)):
+class SnakeUnit(pygame.sprite.Sprite):
+    def __init__(self, factor, obj_color=(255, 255, 255)):
         super().__init__()
-        self.snake = pygame.Surface((10, 10))
-        self.rect = self.snake.get_rect()
-        self.snake.fill(obj_color)
-        self.location = Vector2(
-            self.screen_width/2,
-            self.screen_height/2
+        self.unit = pygame.Surface((10, 10))
+        self.rect = self.unit.get_rect()
+        self.unit.fill(obj_color)
+        self.settings = Settings()
+        self.direction_flag = 0
+
+        self.start_pos = Vector2(
+            self.settings.screen_width - self.rect.width*factor,
+            self.settings.screen_height / 2
         )
-        self.speed = speed
-        self.move_snake = Vector2(0, 0)
-        self.move_right = False
-        self.move_left = False
-        self.move_up = False
-        self.move_down = False
 
-    def update(self):
-        pass
 
-    def update_game_state(self):
-        # if self.move_right:
-        #     self.location.x += self.speed
-        # elif self.move_left:
-        #     self.location.x -= self.speed
-        # elif self.move_down:
-        #     self.location.y += self.speed
-        # elif self.move_up:
-        #     self.location.y -= self.speed
+class Snake:
+    def __init__(self, obj_color=(255, 255, 255)):
+        super().__init__()
+        # self.settings = Settings()
+        self.snake = pygame.sprite.Group()
+        self.create_snake()
+        self.unit_locations = [entity.start_pos for entity in self.snake]
 
-        self.location += self.move_snake
+    def create_snake(self):
+        for i in range(INITIAL_NUM_UNITS, 0, -1):
+            self.snake.add(SnakeUnit(i))
 
-        if self.location.x < 0:
-            self.location.x = 0
-        if self.location.x > self.screen_width - self.rect.width:
-            self.location.x = self.screen_width - self.rect.width
-        if self.location.y < 0:
-            self.location.y = 0
-        if self.location.y > self.screen_height - self.rect.height:
-            self.location.y = self.screen_height - self.rect.height
+        # s1 = SnakeUnit(3)
+        # print(s1.rect.topleft, s1.rect.topright, s1.rect)
 
-        print(self.location)
+    def update(self, move_snake, speed, move_direction):
+        old = copy.deepcopy(self.unit_locations)
+        # old = list(self.unit_locations)
+        # print(old, self.unit_locations)
+        self.unit_locations[0] += move_snake
 
-        # Continuous movement of snake will stop and it will move only on key
-        # event
-        # self.move_snake.x = 0
-        # self.move_snake.y = 0
+        if move_direction[0]:
+            pass
 
-        # if self.move_right:
-        #     self.rect.move_ip(self.speed, 0)
-        # elif self.move_left:
-        #     self.rect.move_ip(-self.speed, 0)
-        # elif self.move_down:
-        #     self.rect.move_ip(0, self.speed)
-        # elif self.move_up:
-        #     self.rect.move_ip(0, -self.speed)
-        #
-        # if self.rect.left < 0:
-        #     self.rect.left = 0
-        # if self.rect.right > self.screen_width - self.snake.get_width():
-        #     self.rect.right = self.screen_width - self.snake.get_width()
-        # if self.rect.top <= 0:
-        #     self.rect.top = 0
-        # if self.rect.bottom >= self.screen_height - self.snake.get_height():
-        #     self.rect.bottom = self.screen_height - self.snake.get_height()
+        for idx, loc in enumerate(self.unit_locations, 0):
+            if idx < len(self.unit_locations)-1:
+                x = self.unit_locations[idx].x - (move_snake.x / speed) * 10
+                y = self.unit_locations[idx].y - (move_snake.y / speed) * 10
 
-        # self.rect.move_ip(self.position)
+                if self.unit_locations[idx].x < 0:
+                    self.unit_locations[idx].x = 640 - speed
+                if self.unit_locations[idx].x > 640 - speed:
+                    self.unit_locations[idx].x = 0
+                if self.unit_locations[idx].y < 0:
+                    self.unit_locations[idx].y = 480 - speed
+                if self.unit_locations[idx].y > 480 - speed:
+                    self.unit_locations[idx].y = 0
 
-    def render_objects(self):
-        self.screen.fill(self.bg_color)
-        self.screen.blit(self.snake, self.location)
-        # self.rect.move_ip(self.location)
-        # print(self.rect)
-        pygame.display.flip()
-        pass
+                self.unit_locations[idx+1] = Vector2(x, y)
+        print(self.unit_locations)
+        self.snake.update()
 
-    def handle_keydown_events(self, event):
-        self.move_snake = Vector2(0, 0)
-
-        if event.key == pygame.K_RIGHT:
-            self.move_snake.x = self.speed
-        elif event.key == pygame.K_LEFT:
-            self.move_snake.x = -self.speed
-        elif event.key == pygame.K_DOWN:
-            self.move_snake.y = self.speed
-        elif event.key == pygame.K_UP:
-            self.move_snake.y = -self.speed
-        elif event.key == pygame.K_ESCAPE:
-            self.running = False
-
-        # print(self.move_snake)
-
-        # if event.key == pygame.K_RIGHT:
-        #     self.move_right = True
-        # elif event.key == pygame.K_LEFT:
-        #     self.move_left = True
-        # elif event.key == pygame.K_DOWN:
-        #     self.move_down = True
-        # elif event.key == pygame.K_UP:
-        #     self.move_up = True
-        # elif event.key == pygame.K_ESCAPE:
-        #     self.running = False
-
-    def handle_keyup_events(self, event):
-        # if event.key == pygame.K_RIGHT:
-        #     self.move_right = False
-        # elif event.key == pygame.K_LEFT:
-        #     self.move_left = False
-        # elif event.key == pygame.K_DOWN:
-        #     self.move_down = False
-        # elif event.key == pygame.K_UP:
-        #     self.move_up = False
-
-        # if event.key == pygame.K_RIGHT:
-        #     self.move_snake.x = 0
-        # elif event.key == pygame.K_LEFT:
-        #     self.move_snake.x = 0
-        # elif event.key == pygame.K_DOWN:
-        #     self.move_snake.y = 0
-        # elif event.key == pygame.K_UP:
-        #     self.move_snake.y = 0
-        pass
-
-s = Snake()
-s.game_loop(60)
+    def render(self, screen, new_locations):
+        for idx, sn in enumerate(self.snake.sprites()):
+            screen.blit(sn.unit, self.unit_locations[idx])
