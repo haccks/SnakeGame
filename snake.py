@@ -1,10 +1,11 @@
 import pygame
 from pygame.math import Vector2
-from foundation import Settings
 import copy
 
+
+from settings import Settings
+
 INITIAL_NUM_BLOCKS = 3
-BLOCK_SIZE = 15
 
 
 class SnakeBlock(pygame.sprite.Sprite):
@@ -15,19 +16,18 @@ class SnakeBlock(pygame.sprite.Sprite):
         :param obj_color: Color the block
         """
         super().__init__()
-        self.settings = Settings()
-        self.block = pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
+        self.block = pygame.Surface((Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
         self.rect = self.block.get_rect()
         self.block.fill(obj_color)
 
         self.start_pos = Vector2(
-            self.settings.screen_width - self.rect.width*factor,
-            self.settings.screen_height / 2
+            Settings.SCREEN_WIDTH - self.rect.width*factor,
+            Settings.SCREEN_HEIGHT / 2
         )
 
 
 class Snake:
-    step = BLOCK_SIZE
+    STEP = Settings.BLOCK_SIZE
 
     def __init__(self):
         """
@@ -37,9 +37,12 @@ class Snake:
         self.settings = Settings()
         self.snake = pygame.sprite.Group()
         self.create_snake()
-        self.blocks_pos = [block.start_pos for block in self.snake]
         self.head_move = Vector2(0, 0)
         self.head_direction = None
+        self.last_block_pos = Vector2(0, 0)
+        self.length = INITIAL_NUM_BLOCKS
+        self.blocks_pos = [block.start_pos for block in self.snake]
+        # self.dirty_rects = [block.rect for block in self.snake]
 
     def create_snake(self):
         """
@@ -56,7 +59,7 @@ class Snake:
         :return: None
         """
 
-        self.head_move.x = self.step
+        self.head_move.x = self.STEP
         self.head_move.y = 0
 
     def move_left(self):
@@ -65,7 +68,7 @@ class Snake:
         :return: None
         """
 
-        self.head_move.x = -self.step
+        self.head_move.x = -self.STEP
         self.head_move.y = 0
 
     def move_down(self):
@@ -75,7 +78,7 @@ class Snake:
         """
 
         self.head_move.x = 0
-        self.head_move.y = self.step
+        self.head_move.y = self.STEP
 
     def move_up(self):
         """
@@ -84,7 +87,7 @@ class Snake:
         """
 
         self.head_move.x = 0
-        self.head_move.y = -self.step
+        self.head_move.y = -self.STEP
 
     def update_head(self):
         """
@@ -93,6 +96,7 @@ class Snake:
         """
 
         self.blocks_pos.insert(0, self.blocks_pos[0] + self.head_move)
+        # self.dirty_rects.append()
         # old = copy.deepcopy(self.blocks_location)
         # self.blocks_location[1:] = old[:-1]
         # self.blocks_location[0] += move_snake
@@ -105,7 +109,7 @@ class Snake:
         :return:
         """
 
-        block_pos = self.blocks_pos.pop()
+        self.last_block_pos = self.blocks_pos.pop()
         # self.snake.remove(block_pos)
 
     def check_boundary(self):
@@ -115,8 +119,8 @@ class Snake:
         :return:
         """
 
-        self.blocks_pos[0].x = self.blocks_pos[0].x % self.settings.screen_width
-        self.blocks_pos[0].y = self.blocks_pos[0].y % self.settings.screen_height
+        self.blocks_pos[0].x = self.blocks_pos[0].x % Settings.SCREEN_WIDTH
+        self.blocks_pos[0].y = self.blocks_pos[0].y % Settings.SCREEN_HEIGHT
         # print(self.blocks_pos)
 
     def update(self):

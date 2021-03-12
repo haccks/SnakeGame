@@ -1,26 +1,16 @@
 import pygame
 import os
 
-SPEED = 10
+
+from settings import Settings, Colors
 
 
-class Settings:
-    """
-    A class for basic game settings.
-    """
-    def __init__(self, size=(640, 480), bg_color=(0, 0, 0)):
-        self.screen_width = size[0]
-        self.screen_height = size[1]
-        self.bg_color = bg_color
-
-
-class Foundation(Settings):
+class Foundation:
     """
     A base class to store general settings and methods for the game.
     """
 
-    def __init__(self, size=(640, 480), bg_color=(0, 0, 0), caption=None,
-                 icon=None):
+    def __init__(self, caption=None, icon=None):
         """
         Initialize the game
         :param size:        Screen size
@@ -29,16 +19,15 @@ class Foundation(Settings):
         :param icon:        Display icon
         """
 
-        super().__init__(size, bg_color)
+        # super().__init__(size, bg_color)
         pygame.init()
         self.screen = pygame.display.set_mode(
-            (self.screen_width, self.screen_height)
+            (Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT)
         )
         self.clock = pygame.time.Clock()
         self.running = True
-        self.fps = SPEED
 
-        self.screen.fill(self.bg_color)
+        self.screen.fill(Settings.BG_COLOR)
 
         os.environ['SDL_VIDEO_CENTERED'] = '1'
 
@@ -98,4 +87,4 @@ class Foundation(Settings):
             self.handle_events()
             self.update_game_state()
             self.render_objects()
-            self.clock.tick(self.fps)
+            self.clock.tick(Settings.FPS)

@@ -13,6 +13,7 @@ from pygame import (
 from foundation import Foundation
 from snake import Snake
 from food import Food
+from settings import Colors, Settings
 
 
 class Game(Foundation):
@@ -20,9 +21,8 @@ class Game(Foundation):
     A class that is responsible for running the game and handling all the
     game related activities.
     """
-    def __init__(self, size=(640, 480), bg_color=(0, 0, 0), caption=None,
-                 icon=None):
-        super().__init__(size, bg_color, caption, icon)
+    def __init__(self, caption=None, icon=None):
+        super().__init__(caption, icon)
         self.snake = Snake()
         self.food = Food()
         self.play = False
@@ -66,12 +66,11 @@ class Game(Foundation):
         :return: None
         """
 
-        self.screen.fill(self.bg_color)
+        self.screen.fill(Settings.BG_COLOR)
         self.snake.render(self.screen)
         if self.play:
             self.food.render(self.screen)
-        # self.screen.blit(self.snake.snake, self.location)
-        pygame.display.flip()
+        # pygame.display.flip()  # Updates the entire screen
 
     def handle_keydown_events(self, event):
         """
