@@ -1,8 +1,13 @@
 import pygame
 import os
 
+SPEED = 10
+
 
 class Settings:
+    """
+    A class for basic game settings.
+    """
     def __init__(self, size=(640, 480), bg_color=(0, 0, 0)):
         self.screen_width = size[0]
         self.screen_height = size[1]
@@ -31,6 +36,9 @@ class Foundation(Settings):
         )
         self.clock = pygame.time.Clock()
         self.running = True
+        self.fps = SPEED
+
+        self.screen.fill(self.bg_color)
 
         os.environ['SDL_VIDEO_CENTERED'] = '1'
 
@@ -39,10 +47,14 @@ class Foundation(Settings):
         if icon:
             pygame.display.set_icon(pygame.image.load(icon))
 
-        self.screen.fill(self.bg_color)
-        pygame.display.flip()
+        # pygame.display.flip()
 
     def handle_events(self):
+        """
+        helper method to handle all the user events.
+        :return: None
+        """
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -76,9 +88,14 @@ class Foundation(Settings):
         """
         pass
 
-    def game_loop(self, fps):
+    def game_loop(self):
+        """
+        This function will start the game and will continue until user quit.
+        :return: None
+        """
+
         while self.running:
             self.handle_events()
             self.update_game_state()
             self.render_objects()
-            self.clock.tick(fps)
+            self.clock.tick(self.fps)

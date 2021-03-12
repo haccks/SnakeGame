@@ -1,81 +1,104 @@
-from foundation import Foundation
 import pygame
 from pygame.math import Vector2
+from pygame import (
+    K_RIGHT,
+    K_LEFT,
+    K_UP,
+    K_DOWN,
+    K_SPACE,
+    K_ESCAPE,
+)
+
+
+from foundation import Foundation
 from snake import Snake
+from food import Food
 
 
 class Game(Foundation):
-    def __init__(self, speed=10, obj_color=(255, 255, 255)):
-        super().__init__()
+    """
+    A class that is responsible for running the game and handling all the
+    game related activities.
+    """
+    def __init__(self, size=(640, 480), bg_color=(0, 0, 0), caption=None,
+                 icon=None):
+        super().__init__(size, bg_color, caption, icon)
         self.snake = Snake()
-        self.locations = self.snake.unit_locations
-        # print(self.locations)
-        self.move_snake = Vector2(0, 0)
-        self.start = False
-        self.speed = speed
-        self.move_direction = [False, False, False, False]  # left, right, up, down
+        self.food = Food()
+        self.play = False
 
-    def update_game_state(self):
-        # self.location += self.move_snake
-        # self.locations[0] += self.move_snake
-        if self.move_snake.magnitude():
-            self.snake.update(self.move_snake, self.speed, self.move_direction)
-
-        # for idx, unit in enumerate(self.snake.snake):
-        #     if self.locations[idx].x < 0:
-        #         self.locations[idx].x = self.screen_width - unit.rect.width
-        #     if self.locations[idx].x > self.screen_width - unit.rect.width:
-        #         self.locations[idx].x = 0
-        #     if self.locations[idx].y < 0:
-        #         self.locations[idx].y = self.screen_height - unit.rect.height
-        #     if self.locations[idx].y > self.screen_height - unit.rect.height:
-        #         self.locations[idx].y = 0
-
-        # print(self.locations)
-
-        # Continuous movement of snake will stop and it will move only on key
-        # event
-        # self.move_snake.x = 0
-        # self.move_snake.y = 0
-
-    def render_objects(self):
-        self.screen.fill(self.bg_color)
-        self.snake.render(self.screen, self.locations)
-        # self.screen.blit(self.snake.snake, self.location)
-        pygame.display.flip()
+    def draw_grid(self):
+        # TODO
         pass
 
-    def handle_keydown_events(self, event):
-        # self.move_snake = Vector2(0, 0)
+    def play_game(self, key_pressed):
+        """
+        Start game on pressing the space bar key.
+        :param key_pressed:
+        :return: None
+        """
 
-        # if not self.start and event.key == pygame.K_SPACE:
-        #     self.move_snake.x = -self.speed
-        #     self.start = True
+        if key_pressed == K_SPACE and not self.play:
+            self.snake.head_direction = 'Left'
+            self.play = True
 
-        if event.key == pygame.K_RIGHT and not self.move_direction[0]:
-            self.move_snake = Vector2(0, 0)
-            self.move_direction = [False]*4
-            self.move_direction[1] = True
-            self.move_snake.x = self.speed
-        elif event.key == pygame.K_LEFT and not self.move_direction[1]:
-            self.move_snake = Vector2(0, 0)
-            self.move_direction = [False] * 4
-            self.move_direction[0] = True
-            self.move_snake.x = -self.speed
-        elif event.key == pygame.K_DOWN and not self.move_direction[2]:
-            self.move_snake = Vector2(0, 0)
-            self.move_direction = [False] * 4
-            self.move_direction[3] = True
-            self.move_snake.y = self.speed
-        elif event.key == pygame.K_UP and not self.move_direction[3]:
-            self.move_snake = Vector2(0, 0)
-            self.move_direction = [False] * 4
-            self.move_direction[2] = True
-            self.move_snake.y = -self.speed
-        elif event.key == pygame.K_ESCAPE:
+    def quit_game(self, key_pressed):
+        """
+        Quit game on pressing the escape key.
+        :return: None
+        """
+
+        if key_pressed == K_ESCAPE:
             self.running = False
 
+    def update_game_state(self):
+        """
+        Update states of the game objects.
+        :return: None
+        """
+
+        self.snake.update()
+        self.food.update()
+
+    def render_objects(self):
+        """
+        Draw all the game objects to the main game window/screen
+        :return: None
+        """
+
+        self.screen.fill(self.bg_color)
+        self.snake.render(self.screen)
+        if self.play:
+            self.food.render(self.screen)
+        # self.screen.blit(self.snake.snake, self.location)
+        pygame.display.flip()
+
+    def handle_keydown_events(self, event):
+        """
+        Handle all key press events.
+        :param event: Event requested by user
+        :return: None
+        """
+
+        self.play_game(event.key)
+        self.quit_game(event.key)
+
+        if self.play:
+            if event.key == K_RIGHT and self.snake.head_direction != 'Left':
+                self.snake.head_direction = 'Right'
+            elif event.key == K_LEFT and self.snake.head_direction != 'Right':
+                self.snake.head_direction = 'Left'
+            elif event.key == K_DOWN and self.snake.head_direction != 'Up':
+                self.snake.head_direction = 'Down'
+            elif event.key == K_UP and self.snake.head_direction != 'Down':
+                self.snake.head_direction = 'Up'
+
     def handle_keyup_events(self, event):
+        """
+        Handle all key release events.
+        :param event: Event requested by user
+        :return: None
+        """
         # if event.key == pygame.K_RIGHT:
         #     self.move_snake.x = 0
         # elif event.key == pygame.K_LEFT:
@@ -88,4 +111,4 @@ class Game(Foundation):
 
 
 s = Game()
-s.game_loop(20)
+s.game_loop()

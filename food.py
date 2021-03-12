@@ -1,15 +1,33 @@
 import pygame
+from pygame import Vector2
+import random
+
+
+from foundation import Settings
+
+BLOCK_SIZE = 15
 
 
 class Food(pygame.sprite.Sprite):
-    def __init__(self, game_obj, obj_color=(255, 0, 0)):
+    def __init__(self, obj_color=(255, 0, 0)):
         super().__init__()
-        self.food = pygame.Surface((10, 10))
+        self.settings = Settings()
+        self.food = pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
         self.rect = self.food.get_rect()
+        self.block_size = BLOCK_SIZE
+        self.position = Vector2(0, 0)
         self.food.fill(obj_color)
 
     def update(self):
-        pass
+        self.position.x = random.randint(
+            0,
+            self.settings.screen_width-self.block_size
+        )
 
-    def render(self):
-        pass
+        self.position.y = random.randint(
+            0,
+            self.settings.screen_height-self.block_size
+        )
+
+    def render(self, screen):
+        screen.blit(self.food, self.position)
