@@ -21,12 +21,13 @@ class Foundation:
 
         # super().__init__(size, bg_color)
         pygame.init()
+        pygame.font.init()
         self.screen = pygame.display.set_mode(
             (Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT)
         )
+        self.font = pygame.font.SysFont(None, 25, True)
         self.clock = pygame.time.Clock()
         self.running = True
-
         self.screen.fill(Settings.BG_COLOR)
 
         os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -88,3 +89,5 @@ class Foundation:
             self.update_game_state()
             self.render_objects()
             self.clock.tick(Settings.FPS)
+
+        pygame.quit()

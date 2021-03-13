@@ -7,6 +7,7 @@ from pygame import (
     K_DOWN,
     K_SPACE,
     K_ESCAPE,
+    K_p
 )
 
 
@@ -28,12 +29,23 @@ class Game(Foundation):
         self.food = Food()
         self.food_consumed_sound = Sound("consumed.wav")
         self.death_sound = Sound("death.mp3")
+        self.bg_sound = Sound("background.mp3")
         self.play = False
         self.score = 0
+        # self.bg = pygame.Surface((440, 440))
 
     def draw_grid(self):
-        # TODO
-        pass
+        border = 0  # Settings.BLOCK_SIZE * 2 - 1
+        h = Settings.SCREEN_HEIGHT - border
+        w = Settings.SCREEN_WIDTH - border
+
+        for row in range(border, h, Settings.BLOCK_SIZE):
+            pygame.draw.line(self.screen, Colors.GREY.value, (border, row),
+                             (w, row))
+
+        for col in range(border, w, Settings.BLOCK_SIZE):
+            pygame.draw.line(self.screen, Colors.GREY.value, (col, border),
+                             (col, h))
 
     def play_game(self, key_pressed):
         """
@@ -45,6 +57,10 @@ class Game(Foundation):
         if key_pressed == K_SPACE and not self.play:
             self.snake.head_direction = 'Left'
             self.play = True
+            # Setup the background sound but pause it by default
+            self.bg_sound.play_sound(loops=-1, vol=0.01)
+            self.bg_sound.pause_sound()
+            self.draw_grid()
 
     def quit_game(self, key_pressed):
         """
@@ -54,6 +70,12 @@ class Game(Foundation):
 
         if key_pressed == K_ESCAPE:
             self.running = False
+
+    def render_score(self):
+        text = "Score: " + str(self.score)
+        score_surf = self.font.render(text, True, (255, 0, 0))
+        score_surf.set_alpha(100)
+        self.screen.blit(score_surf, (0, 0))
 
     def snake_hit_food(self):
         head = self.snake.blocks_pos[0]
@@ -96,11 +118,14 @@ class Game(Foundation):
         Draw all the game objects to the main game window/screen
         :return: None
         """
-
+        # grid_window = pygame.Rect((40, 40), (400, 400))
+        # self.screen.fill((255, 255, 255), grid_window)
         self.screen.fill(Settings.BG_COLOR)
-        self.snake.render(self.screen)
         if self.play:
+            self.draw_grid()
+            self.snake.render(self.screen)
             self.food.render(self.screen)
+            self.render_score()
         pygame.display.flip()  # Updates the entire screen
 
     def handle_keydown_events(self, event):
@@ -122,6 +147,8 @@ class Game(Foundation):
                 self.snake.head_direction = 'Down'
             elif event.key == K_UP and self.snake.head_direction != 'Down':
                 self.snake.head_direction = 'Up'
+            elif event.key == K_p:
+                self.bg_sound.pause_sound()
 
     def handle_keyup_events(self, event):
         """
@@ -129,14 +156,7 @@ class Game(Foundation):
         :param event: Event requested by user
         :return: None
         """
-        # if event.key == pygame.K_RIGHT:
-        #     self.move_snake.x = 0
-        # elif event.key == pygame.K_LEFT:
-        #     self.move_snake.x = 0
-        # elif event.key == pygame.K_DOWN:
-        #     self.move_snake.y = 0
-        # elif event.key == pygame.K_UP:
-        #     self.move_snake.y = 0
+
         pass
 
 

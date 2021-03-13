@@ -3,13 +3,13 @@ from pygame.math import Vector2
 import copy
 
 
-from settings import Settings
+from settings import Settings, Colors
 
 INITIAL_NUM_BLOCKS = 3
 
 
 class SnakeBlock(pygame.sprite.Sprite):
-    def __init__(self, pos=(0, 0), obj_color=(255, 255, 255)):
+    def __init__(self, pos=(0, 0), obj_color=Colors.BLACK.value):
         """
         Constructor to initiate a snake block.
         :param factor:
@@ -169,4 +169,3 @@ class Snake:
         self.head_move.x = 0
         self.head_move.y = 0
         self.head_direction = None
-
