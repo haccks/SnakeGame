@@ -1,4 +1,5 @@
 import pygame
+import time
 from pygame import (
     K_RIGHT,
     K_LEFT,
@@ -13,6 +14,7 @@ from foundation import Foundation
 from snake import Snake
 from food import Food
 from settings import Colors, Settings
+from sounds import Sound
 
 
 class Game(Foundation):
@@ -24,6 +26,8 @@ class Game(Foundation):
         super().__init__(caption, icon)
         self.snake = Snake()
         self.food = Food()
+        self.food_consumed_sound = Sound("consumed.wav")
+        self.death_sound = Sound("death.mp3")
         self.play = False
         self.score = 0
 
@@ -54,7 +58,8 @@ class Game(Foundation):
     def snake_hit_food(self):
         head = self.snake.blocks_pos[0]
         if head == self.food.position:
-            print(self.food.position)
+            # print(self.food.position)
+            self.food_consumed_sound.play_sound(vol=0.1)
             self.snake.increase_snake_length()
             self.score += 1
             return True
@@ -63,9 +68,11 @@ class Game(Foundation):
     def snake_hit_itself(self):
         head = self.snake.blocks_pos[0]
         if head in self.snake.blocks_pos[1:]:
+            self.death_sound.play_sound(vol=0.3)
+            time.sleep(1)
             self.running = False
-            return False
-        return True
+            return True
+        return False
 
     def update_game_state(self):
         """
@@ -75,10 +82,10 @@ class Game(Foundation):
 
         hit_food = self.snake_hit_food()
         hit_itself = self.snake_hit_itself()
-        if not hit_food and hit_itself:
+        if not hit_food and not hit_itself:
             self.snake.update()
         # Update food position until food is not one of the snake block
-        if hit_food:
+        if hit_food and not hit_itself:
             while True:
                 self.food.update()
                 if self.food.position not in self.snake.blocks_pos:
