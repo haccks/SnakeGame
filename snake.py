@@ -9,7 +9,7 @@ INITIAL_NUM_BLOCKS = 3
 
 
 class SnakeBlock(pygame.sprite.Sprite):
-    def __init__(self, factor, obj_color=(255, 255, 255)):
+    def __init__(self, pos=(0, 0), obj_color=(255, 255, 255)):
         """
         Constructor to initiate a snake block.
         :param factor:
@@ -17,13 +17,9 @@ class SnakeBlock(pygame.sprite.Sprite):
         """
         super().__init__()
         self.block = pygame.Surface((Settings.BLOCK_SIZE, Settings.BLOCK_SIZE))
-        self.rect = self.block.get_rect()
         self.block.fill(obj_color)
-
-        self.start_pos = Vector2(
-            Settings.SCREEN_WIDTH - self.rect.width*factor,
-            Settings.SCREEN_HEIGHT / 2
-        )
+        self.start_pos = Vector2(pos)
+        self.rect = self.block.get_rect(topleft=pos)
 
 
 class Snake:
@@ -34,14 +30,13 @@ class Snake:
         Constructor to initiate snake object.
         """
         super().__init__()
-        self.settings = Settings()
-        self.snake = pygame.sprite.Group()
+        self.snake = []
+        self.blocks_pos = []
         self.create_snake()
         self.head_move = Vector2(0, 0)
         self.head_direction = None
         self.last_block_pos = Vector2(0, 0)
         self.length = INITIAL_NUM_BLOCKS
-        self.blocks_pos = [block.start_pos for block in self.snake]
         # self.dirty_rects = [block.rect for block in self.snake]
 
     def create_snake(self):
@@ -50,8 +45,16 @@ class Snake:
         :return: None
         """
 
-        for i in range(INITIAL_NUM_BLOCKS, 0, -1):
-            self.snake.add(SnakeBlock(i))
+        for i in range(INITIAL_NUM_BLOCKS):
+            x = Settings.SCREEN_WIDTH - (i + 1) * Settings.BLOCK_SIZE
+            y = Settings.SCREEN_HEIGHT / 2
+            self.snake.insert(0, SnakeBlock(pos=(x, y)))
+            self.blocks_pos.insert(0, Vector2(x, y))
+
+    def increase_snake_length(self):
+        self.snake.insert(0, SnakeBlock(self.blocks_pos[0]))
+        self.update_head()
+        self.length += 1
 
     def move_right(self):
         """
@@ -96,7 +99,7 @@ class Snake:
         """
 
         self.blocks_pos.insert(0, self.blocks_pos[0] + self.head_move)
-        # self.dirty_rects.append()
+
         # old = copy.deepcopy(self.blocks_location)
         # self.blocks_location[1:] = old[:-1]
         # self.blocks_location[0] += move_snake
@@ -110,7 +113,7 @@ class Snake:
         """
 
         self.last_block_pos = self.blocks_pos.pop()
-        # self.snake.remove(block_pos)
+        print(self.blocks_pos)
 
     def check_boundary(self):
         """
@@ -143,8 +146,6 @@ class Snake:
             self.update_body()
             self.check_boundary()
 
-        self.snake.update()
-
     def render(self, screen):
         """
         Draws all the blocks of snake to the main screen.
@@ -152,8 +153,11 @@ class Snake:
         :return: None
         """
 
-        for idx, sn in enumerate(self.snake.sprites()):
+        for idx, sn in enumerate(self.snake):
+            # print(idx)
             screen.blit(sn.block, self.blocks_pos[idx])
+        # for idx, sn in enumerate(self.snake.sprites()):
+        #     screen.blit(sn.block, self.blocks_pos[idx])
         # pygame.display.update(self.blocks_pos)
 
     def __reset_head_move(self):

@@ -13,8 +13,8 @@ class Settings:
     """
     A class for basic game settings.
     """
-    FPS = 10
-    BLOCK_SIZE = 15
+    FPS = 5
+    BLOCK_SIZE = 20
     SCREEN_WIDTH = 640
     SCREEN_HEIGHT = 480
     BG_COLOR = Colors.BLACK.value

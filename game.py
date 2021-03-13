@@ -1,5 +1,4 @@
 import pygame
-from pygame.math import Vector2
 from pygame import (
     K_RIGHT,
     K_LEFT,
@@ -26,6 +25,7 @@ class Game(Foundation):
         self.snake = Snake()
         self.food = Food()
         self.play = False
+        self.score = 0
 
     def draw_grid(self):
         # TODO
@@ -51,14 +51,38 @@ class Game(Foundation):
         if key_pressed == K_ESCAPE:
             self.running = False
 
+    def snake_hit_food(self):
+        head = self.snake.blocks_pos[0]
+        if head == self.food.position:
+            print(self.food.position)
+            self.snake.increase_snake_length()
+            self.score += 1
+            return True
+        return False
+
+    def snake_hit_itself(self):
+        head = self.snake.blocks_pos[0]
+        if head in self.snake.blocks_pos[1:]:
+            self.running = False
+            return False
+        return True
+
     def update_game_state(self):
         """
         Update states of the game objects.
         :return: None
         """
 
-        self.snake.update()
-        self.food.update()
+        hit_food = self.snake_hit_food()
+        hit_itself = self.snake_hit_itself()
+        if not hit_food and hit_itself:
+            self.snake.update()
+        # Update food position until food is not one of the snake block
+        if hit_food:
+            while True:
+                self.food.update()
+                if self.food.position not in self.snake.blocks_pos:
+                    break
 
     def render_objects(self):
         """
@@ -70,7 +94,7 @@ class Game(Foundation):
         self.snake.render(self.screen)
         if self.play:
             self.food.render(self.screen)
-        # pygame.display.flip()  # Updates the entire screen
+        pygame.display.flip()  # Updates the entire screen
 
     def handle_keydown_events(self, event):
         """
