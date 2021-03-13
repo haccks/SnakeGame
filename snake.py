@@ -12,7 +12,7 @@ class SnakeBlock(pygame.sprite.Sprite):
     def __init__(self, pos=(0, 0), obj_color=Colors.BLACK.value):
         """
         Constructor to initiate a snake block.
-        :param factor:
+        :param pos: Initial position of the block
         :param obj_color: Color the block
         """
         super().__init__()

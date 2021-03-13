@@ -73,8 +73,8 @@ class Game(Foundation):
 
     def render_score(self):
         text = "Score: " + str(self.score)
-        score_surf = self.font.render(text, True, (255, 0, 0))
-        score_surf.set_alpha(100)
+        score_surf = self.font.render(text, True, Colors.GREY.value)
+        score_surf.set_alpha(127)
         self.screen.blit(score_surf, (0, 0))
 
     def snake_hit_food(self):
