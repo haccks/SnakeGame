@@ -113,7 +113,6 @@ class Snake:
         """
 
         self.last_block_pos = self.blocks_pos.pop()
-        print(self.blocks_pos)
 
     def check_boundary(self):
         """
