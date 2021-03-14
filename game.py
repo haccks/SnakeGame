@@ -101,17 +101,22 @@ class Game(Foundation):
         Update states of the game objects.
         :return: None
         """
+        if self.play:
+            while self.snake.length < 3:
+                print(self.snake.length)
+                self.snake.update()
+                self.snake.length += 1
 
-        hit_food = self.snake_hit_food()
-        hit_itself = self.snake_hit_itself()
-        if not hit_food and not hit_itself:
-            self.snake.update()
-        # Update food position until food is not one of the snake block
-        if hit_food and not hit_itself:
-            while True:
-                self.food.update()
-                if self.food.position not in self.snake.blocks_pos:
-                    break
+            hit_food = self.snake_hit_food()
+            hit_itself = self.snake_hit_itself()
+            if not hit_food and not hit_itself:
+                self.snake.update()
+            # Update food position until food is not one of the snake block
+            if hit_food and not hit_itself:
+                while True:
+                    self.food.update()
+                    if self.food.position not in self.snake.blocks_pos:
+                        break
 
     def render_objects(self):
         """

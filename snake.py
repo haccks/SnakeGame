@@ -5,7 +5,7 @@ import copy
 
 from settings import Settings, Colors
 from utility import RandomPoint
-INITIAL_NUM_BLOCKS = 3
+INITIAL_NUM_BLOCKS = 1
 
 
 class SnakeBlock(pygame.sprite.Sprite):
@@ -47,7 +47,8 @@ class Snake:
         point = RandomPoint(0, Settings.BLOCK_SIZE).point
 
         for i in range(INITIAL_NUM_BLOCKS):
-            x = Settings.SCREEN_WIDTH - (i + 1) * Settings.BLOCK_SIZE
+            print(point)
+            x = Settings.SCREEN_WIDTH #- (i + 1) * Settings.BLOCK_SIZE
             y = point[1]  # Same random y coordinate for all blocks
             self.snake.insert(0, SnakeBlock(pos=(x, y)))
             self.blocks_pos.insert(0, Vector2(x, y))
@@ -100,6 +101,8 @@ class Snake:
         """
 
         self.blocks_pos.insert(0, self.blocks_pos[0] + self.head_move)
+        if self.length < 3:
+            self.snake.insert(0, SnakeBlock(pos=self.blocks_pos[0]))
 
         # old = copy.deepcopy(self.blocks_location)
         # self.blocks_location[1:] = old[:-1]
@@ -112,8 +115,10 @@ class Snake:
         Updates the body of the snake. Pop out the last block.
         :return:
         """
-
+        if self.length < 3:
+            return
         self.last_block_pos = self.blocks_pos.pop()
+        print(self.blocks_pos)
 
     def check_boundary(self):
         """
