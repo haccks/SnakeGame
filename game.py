@@ -160,5 +160,5 @@ class Game(Foundation):
         pass
 
 
-s = Game()
+s = Game("Classic Snake Game")
 s.game_loop()

@@ -1,10 +1,9 @@
 import pygame
 from pygame import Vector2
-import random
 
 
 from settings import Settings, Colors
-random.seed()
+from utility import RandomPoint
 
 
 class Food(pygame.sprite.Sprite):
@@ -19,11 +18,13 @@ class Food(pygame.sprite.Sprite):
         self.dirty_rects = [self.rect]
         self.food.fill(obj_color)
 
+    # def random_position(self):
+    #     x = random.randrange(0, Settings.SCREEN_WIDTH, self.block_size)
+    #     y = random.randrange(0, Settings.SCREEN_HEIGHT, self.block_size)
+    #
+    #     return x, y
     def random_position(self):
-        x = random.randrange(0, Settings.SCREEN_WIDTH, self.block_size)
-        y = random.randrange(0, Settings.SCREEN_HEIGHT, self.block_size)
-
-        return x, y
+        return RandomPoint(0, self.block_size).point
 
     def update(self):
         self.prev_pos.x = self.position.x

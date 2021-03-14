@@ -4,7 +4,7 @@ import copy
 
 
 from settings import Settings, Colors
-
+from utility import RandomPoint
 INITIAL_NUM_BLOCKS = 3
 
 
@@ -44,10 +44,11 @@ class Snake:
         Creates the initial snake from snake blocks.
         :return: None
         """
+        point = RandomPoint(0, Settings.BLOCK_SIZE).point
 
         for i in range(INITIAL_NUM_BLOCKS):
             x = Settings.SCREEN_WIDTH - (i + 1) * Settings.BLOCK_SIZE
-            y = Settings.SCREEN_HEIGHT / 2
+            y = point[1]  # Same random y coordinate for all blocks
             self.snake.insert(0, SnakeBlock(pos=(x, y)))
             self.blocks_pos.insert(0, Vector2(x, y))
 
