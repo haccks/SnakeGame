@@ -32,6 +32,8 @@ class Game(Foundation):
         self.bg_sound = Sound("background.mp3")
         self.play = False
         self.score = 0
+        self.game_over = False
+        self.wait = 1
         # self.bg = pygame.Surface((440, 440))
 
     def draw_grid(self):
@@ -77,6 +79,13 @@ class Game(Foundation):
         score_surf.set_alpha(127)
         self.screen.blit(score_surf, (0, 0))
 
+    def render_game_over(self):
+        text = "Game Over!"
+        game_over_surf = self.font.render(text, True, Colors.RED.value)
+        surf_rect = game_over_surf.get_rect(center=(Settings.SCREEN_WIDTH/2,
+                                            Settings.SCREEN_HEIGHT/2))
+        self.screen.blit(game_over_surf, surf_rect)
+
     def snake_hit_food(self):
         head = self.snake.blocks_pos[0]
         if head == self.food.position:
@@ -91,8 +100,10 @@ class Game(Foundation):
         head = self.snake.blocks_pos[0]
         if head in self.snake.blocks_pos[1:]:
             self.death_sound.play_sound(vol=0.3)
-            time.sleep(1)
-            self.running = False
+            pygame.time.delay(1000)
+            # self.running = False
+            self.play = False
+            self.game_over = True
             return True
         return False
 
@@ -102,11 +113,6 @@ class Game(Foundation):
         :return: None
         """
         if self.play:
-            while self.snake.length < 3:
-                print(self.snake.length)
-                self.snake.update()
-                self.snake.length += 1
-
             hit_food = self.snake_hit_food()
             hit_itself = self.snake_hit_itself()
             if not hit_food and not hit_itself:
@@ -131,6 +137,13 @@ class Game(Foundation):
             self.snake.render(self.screen)
             self.food.render(self.screen)
             self.render_score()
+
+        if self.game_over:
+            self.render_game_over()
+            if self.wait > 3:
+                self.running = False
+            # print(self.wait)
+            self.wait += 1
         pygame.display.flip()  # Updates the entire screen
 
     def handle_keydown_events(self, event):
