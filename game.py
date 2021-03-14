@@ -15,6 +15,7 @@ from snake import Snake
 from food import Food
 from settings import Colors, Settings
 from sounds import Sound
+from tiles import Tiles
 
 
 class Game(Foundation):
@@ -29,28 +30,13 @@ class Game(Foundation):
         self.food_consumed_sound = Sound("consumed.wav")
         self.death_sound = Sound("death.mp3")
         self.bg_sound = Sound("background.mp3")
+        self.tiles = Tiles()
         self.play = False
         self.score = 0
         self.game_over = False
         self.delay = 3
         self.snake_die_time = None
         # self.bg = pygame.Surface((440, 440))
-
-    def create_tiles(self):
-        bs = Settings.BLOCK_SIZE
-        h = Settings.SCREEN_HEIGHT
-        w = Settings.SCREEN_WIDTH
-        colors = [(220, 220, 220), Colors.WHITE.value]
-        for row in range(0, w, bs):
-            for col in range(0, h, bs):
-                rect = pygame.Rect(row, col, bs, bs)
-                print(col, row)
-                if not (row+col)/bs % 2:
-                    color = colors[1]
-                else:
-                    color = colors[0]
-                pygame.draw.rect(self.screen, color, rect)
-        pass
 
     def draw_grid(self):
         border = 0  # Settings.BLOCK_SIZE * 2 - 1
@@ -78,7 +64,7 @@ class Game(Foundation):
             # Setup the background sound but pause it by default
             self.bg_sound.play_sound(loops=-1, vol=0.01)
             self.bg_sound.pause_sound()
-            self.draw_grid()
+            self.tiles.create_tiles()
 
     def quit_game(self, key_pressed):
         """
@@ -134,6 +120,7 @@ class Game(Foundation):
         :return: None
         """
         if self.play:
+            self.tiles.update()
             hit_food = self.snake_hit_food()
             hit_itself = self.snake_hit_itself()
             if not hit_food and not hit_itself:
@@ -154,7 +141,7 @@ class Game(Foundation):
         # self.screen.fill(Settings.BG_COLOR)  #  Not needed if creating tiles.
         if self.play:
             # self.draw_grid()
-            self.create_tiles()
+            self.tiles.render(self.screen)
             self.snake.render(self.screen)
             self.food.render(self.screen)
             self.render_score()
