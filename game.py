@@ -33,7 +33,8 @@ class Game(Foundation):
         self.play = False
         self.score = 0
         self.game_over = False
-        self.wait = 1
+        self.delay = 3
+        self.snake_die_time = None
         # self.bg = pygame.Surface((440, 440))
 
     def draw_grid(self):
@@ -79,17 +80,22 @@ class Game(Foundation):
         score_surf.set_alpha(127)
         self.screen.blit(score_surf, (0, 0))
 
+    def game_over_render_delay(self):
+        current_time = pygame.time.get_ticks()
+        if current_time >= self.snake_die_time + self.delay*1000:
+            self.running = False
+
     def render_game_over(self):
         text = "Game Over!"
         game_over_surf = self.font.render(text, True, Colors.RED.value)
         surf_rect = game_over_surf.get_rect(center=(Settings.SCREEN_WIDTH/2,
                                             Settings.SCREEN_HEIGHT/2))
         self.screen.blit(game_over_surf, surf_rect)
+        self.game_over_render_delay()
 
     def snake_hit_food(self):
         head = self.snake.blocks_pos[0]
         if head == self.food.position:
-            # print(self.food.position)
             self.food_consumed_sound.play_sound(vol=0.1)
             self.snake.increase_snake_length()
             self.score += 1
@@ -104,6 +110,7 @@ class Game(Foundation):
             # self.running = False
             self.play = False
             self.game_over = True
+            self.snake_die_time = pygame.time.get_ticks()
             return True
         return False
 
@@ -138,12 +145,9 @@ class Game(Foundation):
             self.food.render(self.screen)
             self.render_score()
 
-        if self.game_over:
+        elif self.game_over:
             self.render_game_over()
-            if self.wait > 3:
-                self.running = False
-            # print(self.wait)
-            self.wait += 1
+
         pygame.display.flip()  # Updates the entire screen
 
     def handle_keydown_events(self, event):
