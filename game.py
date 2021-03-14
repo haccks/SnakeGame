@@ -15,7 +15,7 @@ from snake import Snake
 from food import Food
 from settings import Colors, Settings
 from sounds import Sound
-from tiles import Tiles
+from background import Background
 
 
 class Game(Foundation):
@@ -30,7 +30,7 @@ class Game(Foundation):
         self.food_consumed_sound = Sound("consumed.wav")
         self.death_sound = Sound("death.mp3")
         self.bg_sound = Sound("background.mp3")
-        self.tiles = Tiles()
+        self.background = Background()
         self.play = False
         self.score = 0
         self.game_over = False
@@ -64,7 +64,7 @@ class Game(Foundation):
             # Setup the background sound but pause it by default
             self.bg_sound.play_sound(loops=-1, vol=0.01)
             self.bg_sound.pause_sound()
-            self.tiles.create_tiles()
+            self.background.create_tiles()
 
     def quit_game(self, key_pressed):
         """
@@ -120,7 +120,7 @@ class Game(Foundation):
         :return: None
         """
         if self.play:
-            self.tiles.update()
+            self.background.update()
             hit_food = self.snake_hit_food()
             hit_itself = self.snake_hit_itself()
             if not hit_food and not hit_itself:
@@ -138,10 +138,10 @@ class Game(Foundation):
         :return: None
         """
 
-        # self.screen.fill(Settings.BG_COLOR)  #  Not needed if creating tiles.
+        self.screen.fill(Settings.BG_COLOR)  # Not needed if creating tiles.
         if self.play:
             # self.draw_grid()
-            self.tiles.render(self.screen)
+            self.background.render(self.screen)
             self.snake.render(self.screen)
             self.food.render(self.screen)
             self.render_score()
@@ -149,6 +149,7 @@ class Game(Foundation):
         elif self.game_over:
             self.render_game_over()
 
+        # Todo: Dirty rectangles
         pygame.display.flip()  # Updates the entire screen
 
     def handle_keydown_events(self, event):
