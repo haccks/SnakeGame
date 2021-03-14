@@ -22,4 +22,3 @@ class Settings:
     BG_COLOR = Colors.WHITE.value
     MEDIA_SOUNDS = "media/sounds"
     MEDIA_SPRITES = "media/sprites"
-

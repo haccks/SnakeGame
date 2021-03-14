@@ -25,7 +25,7 @@ class Foundation:
         self.screen = pygame.display.set_mode(
             (Settings.SCREEN_WIDTH, Settings.SCREEN_HEIGHT)
         )
-        self.font = pygame.font.SysFont(None, 35, True)
+        self.font = pygame.font.SysFont("ibm3270", 25, True)
         self.clock = pygame.time.Clock()
         self.running = True
         self.screen.fill(Settings.BG_COLOR)
