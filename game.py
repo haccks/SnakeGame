@@ -1,5 +1,4 @@
 import pygame
-import time
 from pygame import (
     K_RIGHT,
     K_LEFT,
@@ -36,6 +35,22 @@ class Game(Foundation):
         self.delay = 3
         self.snake_die_time = None
         # self.bg = pygame.Surface((440, 440))
+
+    def create_tiles(self):
+        bs = Settings.BLOCK_SIZE
+        h = Settings.SCREEN_HEIGHT
+        w = Settings.SCREEN_WIDTH
+        colors = [(220, 220, 220), Colors.WHITE.value]
+        for row in range(0, w, bs):
+            for col in range(0, h, bs):
+                rect = pygame.Rect(row, col, bs, bs)
+                print(col, row)
+                if not (row+col)/bs % 2:
+                    color = colors[1]
+                else:
+                    color = colors[0]
+                pygame.draw.rect(self.screen, color, rect)
+        pass
 
     def draw_grid(self):
         border = 0  # Settings.BLOCK_SIZE * 2 - 1
@@ -88,8 +103,7 @@ class Game(Foundation):
     def render_game_over(self):
         text = "Game Over!"
         game_over_surf = self.font.render(text, True, Colors.RED.value)
-        surf_rect = game_over_surf.get_rect(center=(Settings.SCREEN_WIDTH/2,
-                                            Settings.SCREEN_HEIGHT/2))
+        surf_rect = game_over_surf.get_rect(center=self.screen.get_rect().center)
         self.screen.blit(game_over_surf, surf_rect)
         self.game_over_render_delay()
 
@@ -136,11 +150,11 @@ class Game(Foundation):
         Draw all the game objects to the main game window/screen
         :return: None
         """
-        # grid_window = pygame.Rect((40, 40), (400, 400))
-        # self.screen.fill((255, 255, 255), grid_window)
-        self.screen.fill(Settings.BG_COLOR)
+
+        # self.screen.fill(Settings.BG_COLOR)  #  Not needed if creating tiles.
         if self.play:
-            self.draw_grid()
+            # self.draw_grid()
+            self.create_tiles()
             self.snake.render(self.screen)
             self.food.render(self.screen)
             self.render_score()
