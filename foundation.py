@@ -85,9 +85,16 @@ class Foundation:
         """
 
         while self.running:
+            # self.check_fps()
             self.handle_events()
             self.update_game_state()
             self.render_objects()
             self.clock.tick(Settings.FPS)
 
         pygame.quit()
+
+    def check_fps(self):
+        print(round(self.clock.get_fps(), 2))
+        text = self.font.render(str(round(self.clock.get_fps(), 2)), True,
+                                (0, 0, 0))
+        self.screen.blit(text, (20, 40))

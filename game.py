@@ -64,7 +64,7 @@ class Game(Foundation):
             # Setup the background sound but pause it by default
             self.bg_sound.play_sound(loops=-1, vol=0.01)
             self.bg_sound.pause_sound()
-            self.background.create_tiles()
+            self.background.create_background()
 
     def quit_game(self, key_pressed):
         """

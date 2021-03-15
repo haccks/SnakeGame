@@ -18,7 +18,7 @@ class Background:
         self.background = pygame.Surface((Settings.SCREEN_WIDTH,
                                           Settings.SCREEN_HEIGHT))
 
-    def create_tiles(self):
+    def create_background(self):
         bs = Settings.BLOCK_SIZE
         h = Settings.SCREEN_HEIGHT
         w = Settings.SCREEN_WIDTH
@@ -35,7 +35,6 @@ class Background:
                 # Pre blit all the tiles on a new background surface, no need
                 # to blit every tiles in each frame
                 self.background.blit(tile.tile, tile.rect)
-        print(self.tile_sprite)
 
     def update(self):
         self.tile_sprite.update()
